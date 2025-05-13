@@ -1,5 +1,5 @@
-![Ảnh 1](file:///C:/Users/pubada/Downloads/Portfolio-Light.png)
-![Ảnh 2](file:///C:/Users/pubada/Downloads/Protfolio-Dark.png)
+![Ảnh 1](/Downloads/Portfolio-Light.png)
+![Ảnh 2](/Downloads/Protfolio-Dark.png)
 # Online Shopping Website
 
 ## Sử dụng công nghệ
