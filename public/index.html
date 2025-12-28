@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | PuDevs</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.ico">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Lightbox modal styles */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            /* Giảm độ tối nền lightbox một chút */
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            /* Thêm hiệu ứng mờ cho sang trọng */
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            object-fit: contain;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3rem;
+            color: white;
+            cursor: pointer;
+            z-index: 10000;
+            padding: 10px;
+            transition: color 0.3s;
+        }
+
+        .lightbox .close-btn:hover {
+            color: #ef4444;
+        }
+
+        /* --- PHẦN NÚT GẠT (TOGGLE SWITCH) --- */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 0 5px;
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        input:checked+.slider {
+            background-color: #2c3e50;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        /* --- XỬ LÝ MÀU SẮC DARK MODE --- */
+        /* Khi ở chế độ tối, ta sẽ ghi đè các class Tailwind bằng biến CSS hoặc selector */
+        [data-theme="dark"] body {
+            background-color: #0f172a;
+            /* slate-900 */
+            color: #f1f5f9;
+            /* slate-100 */
+        }
+
+        [data-theme="dark"] nav,
+        [data-theme="dark"] .bg-white,
+        [data-theme="dark"] section,
+        [data-theme="dark"] footer {
+            background-color: #1e293b !important;
+            /* slate-800 */
+            border-color: #334155 !important;
+            /* slate-700 */
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .text-slate-800,
+        [data-theme="dark"] .text-slate-700,
+        [data-theme="dark"] .text-slate-600 {
+            color: #f1f5f9 !important;
+        }
+
+        [data-theme="dark"] .text-slate-500 {
+            color: #94a3b8 !important;
+            /* slate-400 */
+        }
+
+        [data-theme="dark"] .bg-slate-50 {
+            background-color: #0f172a !important;
+        }
+
+        [data-theme="dark"] .shadow-lg,
+        [data-theme="dark"] .shadow-md {
+            shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Lightbox background trong dark mode */
+        .lightbox {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .lightbox.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 overflow-x-hidden font-sans">
+
+    <div class=" md:grid md:grid-cols-12 md:grid-flow-dense md:h-full xl:container xl:mx-auto 2xl:max-w-[1280px]">
+
+        <nav data-aos="fade-down"
+            class="relative z-50 flex items-center justify-between bg-white text-slate-800 m-4 p-4 rounded-2xl shadow-lg border border-slate-100 md:m-6 md:mb-6 md:col-span-12">
+
+            <a href="#" class="text-slate-700 text-4xl font-semibold transition-all duration-300">
+                Pu<span class="font-extrabold text-sky-500">Devs</span>
+            </a>
+
+            <div class="theme-switch-wrapper">
+                <label class="theme-switch" for="checkbox">
+                    <input type="checkbox" id="checkbox" />
+                    <div class="slider round">
+                        <span class="icon-sun">☀️</span>
+                        <span class="icon-moon">🌙</span>
+                    </div>
+                </label>
+            </div>
+        </nav>
+
+        <div data-aos="zoom-in" class="p-6 md:p-0 md:pl-6 md:col-span-4 lg:col-span-3">
+            <div
+                class="relative w-full aspect-square md:aspect-auto md:h-full overflow-hidden rounded-3xl shadow-2xl group border-4 border-white">
+                <img class="w-full h-full object-cover transition-transform duration-500 ease-in-out cursor-pointer group-hover:scale-110"
+                    src="../src/assets/profile.png" alt="Profile" onclick="openLightbox(this)">
+                <div
+                    class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-all duration-300 pointer-events-none">
+                </div>
+            </div>
+        </div>
+
+        <div data-aos="fade-up"
+            class="flex flex-col gap-y-6 px-6 mb-8 md:gap-y-8 md:col-span-5 md:justify-between md:mb-0 lg:col-span-3">
+
+            <div class="flex flex-col gap-y-4 md:gap-y-6">
+                <div
+                    class="flex items-center justify-between bg-white p-3.5 flex-1 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-slate-100">
+                    <p class="text-sm text-slate-500 font-medium">Name</p>
+                    <p class="text-lg font-bold text-slate-800">Vu Van Thanh</p>
+                </div>
+                <div
+                    class="flex items-center justify-between bg-white p-3.5 flex-1 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-slate-100">
+                    <p class="text-sm text-slate-500 font-medium">Based in</p>
+                    <p class="text-lg font-bold text-slate-800">VietNam</p>
+                </div>
+                <div
+                    class="flex items-center justify-between bg-white p-3.5 flex-1 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-slate-100">
+                    <p class="text-sm text-slate-500 font-medium">Phone</p>
+                    <p class="text-xs font-bold sm:text-lg text-slate-800">0848488117</p>
+                </div>
+                <div
+                    class="flex items-center justify-between bg-white p-3.5 flex-1 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-slate-100">
+                    <p class="text-sm text-slate-500 font-medium">Email</p>
+                    <p class="text-lg font-bold text-slate-800">vanthanh3045</p>
+                </div>
+            </div>
+
+            <div
+                class="flex items-center justify-around text-4xl bg-white p-2 rounded-2xl shadow-md border border-slate-100 text-slate-600">
+                <a href="https://www.linkedin.com/in/pudevs" target="_blank"
+                    class='bx bxl-linkedin cursor-pointer hover:text-[#0a66c2] transition-all duration-300 transform hover:scale-110'></a>
+                <a href="https://github.com/pudevs" target="_blank"
+                    class='bx bxl-github cursor-pointer hover:text-black transition-all duration-300 transform hover:scale-110'></a>
+                <a href="https://www.facebook.com/vanthanh.vu.31945243" target="_blank"
+                    class='bx bxl-facebook cursor-pointer hover:text-[#1877f2] transition-all duration-300 transform hover:scale-110'></a>
+                <a href="https://www.instagram.com/vanthanh.vu.31945243/" target="_blank"
+                    class='bx bxl-instagram cursor-pointer hover:text-[#E4405F] transition-all duration-300 transform hover:scale-110'></a>
+            </div>
+        </div>
+
+        <div data-aos="flip-left"
+            class="flex flex-col gap-y-4 bg-white mx-6 p-6 rounded-2xl mt-0 mb-8 shadow-lg border border-slate-100 md:mt-6 md:col-span-12 md:flex-row md:gap-x-8 md:justify-between md:items-center lg:col-span-6 lg:flex-col lg:items-stretch">
+            <p class="text-slate-800 text-xl font-bold text-center leading-relaxed lg:text-3xl">
+                Sinh viên năm 3 FPT Polytechnic<br>
+                <span class="text-sky-500">Đam mê</span> xây dựng giao diện người dùng tối ưu.
+            </p>
+            <a href="../src/assets/CV Fontend Developer Intern.pdf" target="_blank" rel="noopener noreferrer"
+                class="inline-block bg-sky-600 px-6 py-3 text-white font-semibold rounded-xl hover:bg-sky-500 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Xem CV của tôi
+            </a>
+        </div>
+
+        <div data-aos="fade-right"
+            class="m-6 mb-8 flex flex-col gap-4 md:flex-row md:col-span-3 md:flex-col md:pr-6 md:m-0 lg:col-span-6 lg:flex-row lg:gap-x-4 lg:ml-0 lg:p-8">
+            <div
+                class="flex flex-col justify-center items-center flex-1 p-4 text-center bg-emerald-500 text-white rounded-2xl shadow-lg shadow-emerald-200 transition-all duration-300 ">
+                <span class="text-4xl font-bold mb-2">3+</span>
+                <span class="text-sm opacity-90">Years Experience</span>
+            </div>
+            <div
+                class="flex flex-col justify-center items-center flex-1 p-4 text-center bg-amber-500 text-white rounded-2xl shadow-lg shadow-amber-200 transition-all duration-300 ">
+                <span class="text-4xl font-bold mb-2">4+</span>
+                <span class="text-sm opacity-90">Projects</span>
+            </div>
+            <div
+                class="flex flex-col justify-center items-center flex-1 p-4 text-center bg-rose-500 text-white rounded-2xl shadow-lg shadow-rose-200 transition-all duration-300 ">
+                <span class="text-4xl font-bold mb-2">+</span>
+                <span class="text-sm opacity-90">Clients</span>
+            </div>
+        </div>
+
+        <div data-aos="fade-up"
+            class="flex flex-col gap-y-6 mx-6 mb-8 bg-white p-6 rounded-2xl shadow-lg border border-slate-100 md:col-span-12 lg:col-span-6 lg:col-start-7 lg:row-start-2 lg:mb-0">
+            <div class="flex items-center justify-center mb-6">
+                <h3 class="text-2xl font-bold text-slate-800">My Projects</h3>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-3">
+                <div class="group relative aspect-[3/4] overflow-hidden rounded-xl shadow-md bg-slate-100">
+                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:opacity-40"
+                        src="../assets/1.png" alt="Project 1">
+                    <a href="https://github.com/pudevs/WEB1043_Assignment" target="_blank"
+                        class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 p-2">
+                        <span class="text-slate-900 font-bold text-center mb-2 bg-white/80 px-2 py-1 rounded">Assignment
+                            Web</span>
+                    </a>
+                </div>
+                <div class="group relative aspect-[3/4] overflow-hidden rounded-xl shadow-md bg-slate-100">
+                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:opacity-40"
+                        src="../assets/2.png" alt="Project 2">
+                    <a href="https://github.com/gachienmam/PRO231_ExamApp" target="_blank"
+                        class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 p-2">
+                        <span class="text-slate-900 font-bold text-center mb-2 bg-white/80 px-2 py-1 rounded">Exam
+                            App</span>
+                    </a>
+                </div>
+                <div class="group relative aspect-[3/4] overflow-hidden rounded-xl shadow-md bg-slate-100">
+                    <img class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 group-hover:opacity-40"
+                        src="../assets/3.png" alt="Project 3">
+                    <a href="https://github.com/pudevs/QLNV" target="_blank"
+                        class="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 p-2">
+                        <span class="text-slate-900 font-bold text-center mb-2 bg-white/80 px-2 py-1 rounded">QLNV
+                            System</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-12 mx-6 mb-8">
+            <section id="skills" data-aos="fade-up"
+                class="py-12 bg-white rounded-2xl shadow-lg border border-slate-100">
+                <!-- Frontend Skills Section -->
+                <div class="container mx-auto px-4">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">My Skills Fontend</h2>
+                    <p class="text-lg text-slate-500 text-center mb-10">Technologies and tools I use to bring products
+                        to
+                        life</p>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-red-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <i class="fa-brands fa-html5 text-red-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">HTML5</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[80%] h-full bg-gradient-to-r from-red-400 to-red-600 rounded-full"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <i class="fa-brands fa-css3-alt text-blue-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">CSS3</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[65%] h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <i class="fa-brands fa-js text-yellow-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">JavaScript</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[50%] h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-cyan-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <svg viewBox="0 0 24 24" class="w-8 h-8 text-cyan-500" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">Tailwind CSS</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[60%] h-full bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backend Skills Section -->
+                <div class="container mx-auto px-4 mt-12">
+                    <h2 class="text-3xl font-bold text-center mb-2 text-slate-800">My Skills Backend</h2>
+                    <p class="text-lg text-slate-500 text-center mb-10">Technologies and tools I use to bring products
+                        to
+                        life</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <svg viewBox="0 0 128 128" class="w-9 h-9 text-purple-600" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M115.4 30.7L67.1 2.9c-.8-.5-1.9-.7-3.1-.7-1.2 0-2.3.3-3.1.7l-48 27.9c-1.7 1-2.9 3.5-2.9 5.4v55.7c0 1.1.2 2.4 1 3.5l106.8-62c-.6-1.2-1.5-2.1-2.4-2.7z" />
+                                    <path
+                                        d="M10.7 95.3c.5.8 1.2 1.5 1.9 1.9l48.2 27.9c.8.5 1.9.7 3.1.7 1.2 0 2.3-.3 3.1-.7l48-27.9c1.7-1 2.9-3.5 2.9-5.4V36.1c0-.9-.1-1.9-.6-2.8l-106.6 62z" />
+                                    <path fill="#fff"
+                                        d="M85.3 76.1C81.1 83.5 73.1 88.5 64 88.5c-13.5 0-24.5-11-24.5-24.5s11-24.5 24.5-24.5c9.1 0 17.1 5 21.3 12.5l13-7.5c-6.8-11.9-19.6-20-34.3-20-21.8 0-39.5 17.7-39.5 39.5s17.7 39.5 39.5 39.5c14.6 0 27.4-8 34.2-19.8l-12.9-7.6zM97 66.2l.9-4.3h-4.2v-4.7h5.1L100 51h4.9l-1.2 6.1h3.8l1.2-6.1h4.8l-1.2 6.1h2.4v4.7h-3.3l-.9 4.3h4.2v4.7h-5.1l-1.2 6h-4.9l1.2-6h-3.8l-1.2 6h-4.8l1.2-6h-2.4v-4.7H97zm4.8 0h3.8l.9-4.3h-3.8l-.9 4.3z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">C#</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[35%] h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <svg viewBox="0 0 128 128" class="w-9 h-9 text-blue-600" fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M118.766 95.82c.89-1.543 1.441-3.28 1.441-4.843V36.78c0-1.558-.55-3.297-1.441-4.84l-55.32 31.94Zm0 0" />
+                                    <path
+                                        d="m68.36 126.586 46.933-27.094c1.352-.781 2.582-2.129 3.473-3.672l-55.32-31.94L8.12 95.82c.89 1.543 2.121 2.89 3.473 3.672l46.933 27.094c2.703 1.562 7.13 1.562 9.832 0Zm0 0" />
+                                    <path
+                                        d="M118.766 31.941c-.891-1.546-2.121-2.894-3.473-3.671L68.359 1.172c-2.703-1.563-7.129-1.563-9.832 0L11.594 28.27C8.89 29.828 6.68 33.66 6.68 36.78v54.196c0 1.562.55 3.3 1.441 4.843L63.445 63.88Zm0 0" />
+                                    <path fill="#fff"
+                                        d="M63.445 26.035c-20.867 0-37.843 16.977-37.843 37.844s16.976 37.844 37.843 37.844c13.465 0 26.024-7.247 32.77-18.91L79.84 73.335c-3.38 5.84-9.66 9.465-16.395 9.465-10.433 0-18.922-8.488-18.922-18.922 0-10.434 8.49-18.922 18.922-18.922 6.73 0 13.017 3.629 16.39 9.465l16.38-9.477c-6.75-11.664-19.305-18.91-32.77-18.91zM92.88 57.57v4.207h-4.207v4.203h4.207v4.207h4.203V65.98h4.203v-4.203h-4.203V57.57H92.88zm15.766 0v4.207h-4.204v4.203h4.204v4.207h4.207V65.98h4.203v-4.203h-4.203V57.57h-4.207z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">C++</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[35%] h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <i class="fa-brands fa-node-js text-green-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">Node.js</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[30%] h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <i class="fa-solid fa-database text-yellow-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">SQL Server</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[50%] h-full bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200  transition-all duration-300">
+                            <div
+                                class="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+                                <i class="fa-brands fa-git-alt text-orange-500 text-3xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3 text-center text-slate-700">Git</h3>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="w-[40%] h-full bg-gradient-to-r from-orange-400 to-orange-600 rounded-full">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div data-aos="fade-left"
+            class="flex flex-col gap-y-4 bg-white p-6 rounded-2xl mx-6 mb-8 shadow-lg border border-slate-100 md:col-span-12">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xl font-semibold text-slate-800">About</h3>
+            </div>
+            <p class="text-slate-600 leading-relaxed text-justify">
+                Là sinh viên năm 3 chuyên ngành Công nghệ thông tin tại FPT Polytechnic với nền tảng vững chắc về
+                Frontend và kiến thức cơ bản về Backend. Tôi đã tích lũy kinh nghiệm thực chiến thông qua nhiều dự án
+                học thuật và tích cực tham gia các sự kiện công nghệ. Mục tiêu của tôi là ứng tuyển vào vị trí Thực tập
+                sinh Frontend để đóng góp giá trị cho quý công ty, đồng thời mong muốn được học hỏi và rèn luyện kỹ năng
+                trong môi trường chuyên nghiệp thực tế.
+            </p>
+        </div>
+
+    </div>
+
+    <div id="lightbox" class="lightbox" onclick="closeLightboxOnBg(event)">
+        <span class="close-btn" onclick="closeLightbox()">&times;</span>
+        <img id="lightbox-img" src="" alt="Lightbox Image">
+    </div>
+
+    <footer class="py-5 border-t border-slate-200 mt-8 bg-white">
+        <div class="text-center text-slate-500 text-sm">
+            <p>&copy; 2025 PuDevs Portfolio.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 50,
+        });
+
+        /* --- XỬ LÝ MENU MOBILE --- */
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuBtn && mobileMenu) {
+            const menuIcon = mobileMenuBtn.querySelector('i');
+            const mobileLinks = document.querySelectorAll('.mobile-link');
+
+            // Toggle Menu
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                if (mobileMenu.classList.contains('hidden')) {
+                    menuIcon.classList.remove('bx-x');
+                    menuIcon.classList.add('bx-menu');
+                } else {
+                    menuIcon.classList.remove('bx-menu');
+                    menuIcon.classList.add('bx-x');
+                }
+            });
+
+            // Auto Close
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    menuIcon.classList.remove('bx-x');
+                    menuIcon.classList.add('bx-menu');
+                });
+            });
+        }
+
+        /* --- XỬ LÝ LIGHTBOX --- */
+        function openLightbox(img) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            lightboxImg.src = img.src;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function closeLightboxOnBg(event) {
+            if (event.target.id === 'lightbox') {
+                closeLightbox();
+            }
+        }
+
+        // --- XỬ LÝ CHUYỂN ĐỔI CHỦ ĐỀ SÁNG/TỐI --- //
+        const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+        const currentTheme = localStorage.getItem('theme');
+
+        // Kiểm tra trạng thái đã lưu
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        }
+
+        // Hàm chuyển đổi
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        toggleSwitch.addEventListener('change', switchTheme, false);
+    </script>
+</body>
+
+</html>
